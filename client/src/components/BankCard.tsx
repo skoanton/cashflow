@@ -1,4 +1,4 @@
-import { getBankAccounts } from "@/api/goCardLess"
+import { confirmBankAccounts } from "@/api/goCardLess"
 import { Bank } from "@/types/general"
 
 type BankCardProps = {
@@ -8,13 +8,13 @@ type BankCardProps = {
 export default function BankCard({ bank }: BankCardProps) {
 
     const handleClick = async () => {
-        const response = await getBankAccounts(bank.id);
+        console.log('Bank:', bank);
+        const response = await confirmBankAccounts(bank.institution_id);
         if (!response) {
             return;
         }
         console.log('Bank:', response);
     }
-
     return (
         <>
             <div onClick={() => handleClick()} className="flex items-center gap-5 p-4 border-b border-gray-200 hover:cursor-pointer hover:bg-gray-300 ">

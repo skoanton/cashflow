@@ -30,12 +30,13 @@ model User {
 }
 
 model Account {
-  id        Int         @id @default(autoincrement())
-  name      String      @db.VarChar(255) // T.ex. "Sparbank", "Kreditkort"
-  balance   Float       @default(0.0) // Nuvarande saldo
-  type      AccountType // Kontotyp, ex. Savings, Credit
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(255) // T.ex. "Sparbank", "Kreditkort"
+  balance    Float       @default(0.0) // Nuvarande saldo
+  type       AccountType  // Kontotyp, ex. Savings, Credit
+  externalId String      @unique // Externt ID från banken (ska vara unikt)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   // Relationer
   userId       Int

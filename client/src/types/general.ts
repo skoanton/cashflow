@@ -1,5 +1,5 @@
 export interface Bank {
-    id: string;
+    institution_id: string;
     bic: string;
     name: string;
     logo: string;

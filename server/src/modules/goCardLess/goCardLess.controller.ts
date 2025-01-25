@@ -1,7 +1,7 @@
 import { Request,Response } from 'express';
-import { getBanks, connectBank, getAccountsList, getConnectedBankData } from './goCardLess.service';
+import { getBanks, connectBank, getAccountsList, getConnectedBankData,confirmAccountService } from './goCardLess.service';
 
-export async function getBanksHandler(req:Request, res:Response) {
+export async function getBanksController(req:Request, res:Response) {
 
     try {
         const response = await getBanks();
@@ -13,7 +13,7 @@ export async function getBanksHandler(req:Request, res:Response) {
 }
 
 
-export async function connectHandler(req:Request, res:Response) : Promise<any> {
+export async function connectToBankController(req:Request, res:Response) : Promise<any> {
 
     const { bankId, redirect } = req.body;
 
@@ -30,7 +30,7 @@ export async function connectHandler(req:Request, res:Response) : Promise<any> {
     }
 }
 
-export async function getAccountListHandler(req: any, res:Response): Promise<any> {
+export async function getAccountListController(req: any, res:Response): Promise<any> {
     const { id } = req.params;
     const userId = req.user.userId;
     if (!id) {
@@ -45,11 +45,26 @@ export async function getAccountListHandler(req: any, res:Response): Promise<any
     }
 }
 
-export async function getConnectionsHandler(req: any, res:Response):Promise<any> {
+export async function getConnectionsController(req: any, res:Response):Promise<any> {
     const userId = req.user.userId;
 
     try {
         const response = await getConnectedBankData(userId);
+        res.json(response);
+    } catch (error:any) {
+        res.status(500).send(error.message);
+    }
+}
+
+export async function confirmAccountsController(req: any, res:Response):Promise<any> {
+    const { institution_id } = req.params;
+    const userId = req.user.userId;
+    if (!institution_id) {
+        return res.status(400).send('Institution ID is required');
+    }
+
+    try {
+        const response = await confirmAccountService(institution_id, userId);
         res.json(response);
     } catch (error:any) {
         res.status(500).send(error.message);

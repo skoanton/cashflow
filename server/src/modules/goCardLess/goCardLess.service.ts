@@ -1,7 +1,8 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import { getBankConnections, createBankConnection, createPendingAccount } from "./goCardLess.respiratory";
+import { getBankConnections, createBankConnection, createPendingAccount, getPendingAccounts, createAccount } from "./goCardLess.respiratory";
+import { Account } from "@prisma/client";
 dotenv.config();
 
 const BASE_URL = process.env.GOCARDLESS_BASE_URL;
@@ -100,7 +101,6 @@ export async function connectBank(bankId:string, redirect:string) {
     }
 }
 
-
 export async function getAccountsList(requisitionsId:string, userId:string) {
     const token = await getToken();
 
@@ -181,7 +181,7 @@ export async function getConnectedBankData(userId:string) {
                     );
 
                     return {
-                        id: bankConnection.institutionId,
+                        institution_id: bankConnection.institutionId,
                         bic: response.data.bic,
                         name: response.data.name,
                         logo: response.data.logo,
@@ -198,4 +198,60 @@ export async function getConnectedBankData(userId:string) {
         console.error("Failed to get connections:", error.response?.data || error.message);
         throw new Error("Unable to retrieve connections");
     }
+}
+export async function confirmAccountService(institutionId:string, userId:string) {
+    const token = await getToken();
+    const accounts: Account[] = [];
+    if (!token) {
+        throw new Error("Unable to retrieve access token");
+    }
+
+    try {
+        const bankConnections = await getBankConnections(userId);
+
+        const currentBankConnection = bankConnections.find((connection) => connection.institutionId === institutionId);
+        if (!currentBankConnection) {
+            throw new Error("Bank connection not found");
+        }
+        const pendingAccounts = await getPendingAccounts(currentBankConnection.id);
+
+        if(pendingAccounts.length === 0) {
+            throw new Error("No pending accounts found");
+        }
+
+        for(const account of pendingAccounts) {
+            try {
+                const accountDetails = await axios.get(`${BASE_URL}/api/v2/accounts/${account.externalId}/details/`,  {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                if(accountDetails){
+                    console.log(`Accounts details,`,accountDetails);
+                    const accountName = accountDetails.data.product;
+                    const newAccount = await createAccount(userId, account.externalId, accountName);
+                    if(newAccount){
+                        console.log(`Account ${accountName} created successfully`);
+                    }
+                    else {
+                        console.error(`Failed to create account: ${accountName}`);
+                    }
+                    accounts.push(newAccount);
+                }
+            } catch (error) {
+                console.error(`Failed to fetch account details for account: ${account.externalId}`);
+                console.error(error);
+                continue;
+            }
+            
+        }
+
+    } catch (error:any) {
+        console.error("Failed to confirm account:", error.response?.data || error.message);
+        throw new Error("Unable to confirm account");
+    }
+
+    return accounts;
 }

@@ -55,7 +55,7 @@ export default function DashboardPage({ }: DashboardPageProps) {
             <h2>Bank Connections</h2>
             <ul>
                 {bankConnections?.map((bank) => (
-                    <BankCard key={bank.id} bank={bank} />
+                    <BankCard key={bank.institution_id} bank={bank} />
                 ))}
             </ul>
 

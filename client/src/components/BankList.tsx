@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { ScrollArea } from "./ui/scroll-area"
 import { Button } from "./ui/button"
 import { Input } from "@/components/ui/input"
-import { Divide } from "lucide-react"
 import { useNavigate } from "react-router"
 
 type BankListProps = {}
@@ -24,14 +23,12 @@ export default function BankList({ }: BankListProps) {
 
         async function fetchBanks() {
             try {
-                const response = await getBanks();
+                const banks = await getBanks();
 
-                if (!response) {
+                if (!banks) {
                     return null;
                 }
-
-                console.log('response:', response.data);
-                setBanks(response.data);
+                setBanks(banks);
             } catch (error) {
                 console.error('Error during handleConnectBank:', error);
             }
@@ -48,7 +45,7 @@ export default function BankList({ }: BankListProps) {
 
         }
 
-        const response = await connectBank(selectedBank.id);
+        const response = await connectBank(selectedBank.institution_id);
         if (!response) {
             setLoading(false);
             return;
@@ -78,7 +75,7 @@ export default function BankList({ }: BankListProps) {
     }
 
     function handleSelectBank(bank: Bank) {
-        if (selectedBank?.id === bank.id) {
+        if (selectedBank?.institution_id === bank.institution_id) {
             setSelectedBank(null);
             return;
         }
@@ -91,8 +88,8 @@ export default function BankList({ }: BankListProps) {
             <ScrollArea className="w-96 h-96 bg-gray-200 rounded-md p-5">
                 {filteredBanks?.map((bank) => {
                     return (
-                        <div onClick={() => handleSelectBank(bank)} key={bank.id} className="flex items-center space-x-4 p-4 border-b border-gray-200 hover:cursor-pointer hover:bg-gray-300 ">
-                            {selectedBank?.id === bank.id &&
+                        <div onClick={() => handleSelectBank(bank)} key={bank.institution_id} className="flex items-center space-x-4 p-4 border-b border-gray-200 hover:cursor-pointer hover:bg-gray-300 ">
+                            {selectedBank?.institution_id === bank.institution_id &&
                                 <div className="justify-self-end">
                                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAR1JREFUWEftl80NgkAQhd9AI7Rg1GSPeDDShdKJnYhdaDzgkUSNJYiFuKNLolFc+cmuigauMPM+HvOzEL580Zf10QI014FgLzwpMSaGZ1onxJgv+slal0frwHAnJsSYmQrfxzuMgQ5CCzDaihkDE5sABETLXhLmc7YAf+oAYQrOaujWQR+rASaEq24SDbciJsC/Ft1HAF6JK4i3AxSJGwMwsHZdhPKEg242lIkbAwBIHRcDlSgPUUXcBoDK8QRRVdwWwAPEScLXVfur8W2zCDMnFp0kzbda0e6wCZA5cVlW6X2fly0u2wBlek/3W4DfciDYCF8S4tofuiCg1pFM5VEQTBibQjBlHXNUM6PyodRUtE58c/8L6ryFybOtA2cXitAh1aIndAAAAABJRU5ErkJggg==" alt="selected" height={24} width={24} />
                                 </div>}

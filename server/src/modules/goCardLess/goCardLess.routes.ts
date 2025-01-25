@@ -1,12 +1,12 @@
 import express from "express";
-import { getBanksHandler, connectHandler, getAccountListHandler, getConnectionsHandler } from "./goCardLess.controller";
+import { getBanksController, connectToBankController, getAccountListController, getConnectionsController,confirmAccountsController } from "./goCardLess.controller";
 
 const router = express.Router();
 
-router.get("/", getBanksHandler);
-router.post("/connect", connectHandler);
-router.get("/accounts/:id", getAccountListHandler);
-router.get("/accounts/:id/list", getAccountListHandler);
-router.get("/connections", getConnectionsHandler);
+router.get("/", getBanksController);
+router.post("/connect", connectToBankController);
+router.get("/accounts/:id/list", getAccountListController);
+router.get("/accounts/:institution_id/confirm", confirmAccountsController);
+router.get("/connections", getConnectionsController);
 
 export default router;
