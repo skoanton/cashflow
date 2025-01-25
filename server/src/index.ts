@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './modules/auth/auth.routes.js';
-import goCardLessRoutes from './modules/goCardLess/goCardLess.routes.js';
-import { authenticate } from './middleware/middleware.js';
+import authRoutes from './modules/auth/auth.routes';
+import goCardLessRoutes from './modules/goCardLess/goCardLess.routes';
+import { authenticate } from './middleware/middleware';
 const app = express();
 const port = 3000;
 

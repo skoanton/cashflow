@@ -1,15 +1,14 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { jwtDecode } from "jwt-decode";
 import bcrypt from "bcrypt";
-import { getBankConnections, createBankConnection, createPendingAccount } from "./goCardLess.respiratory.js";
+import { getBankConnections, createBankConnection, createPendingAccount } from "./goCardLess.respiratory";
 dotenv.config();
 
 const BASE_URL = process.env.GOCARDLESS_BASE_URL;
-let access_token = null;
-let refresh_token = null;
-let access_expires_in = null;
-let refresh_expires_in = null;
+let access_token:string | null = null;
+let refresh_token:string | null = null;
+let access_expires_in:number | null = null;
+let refresh_expires_in:number | null = null;
 
 
 export async function getToken() {
@@ -20,8 +19,8 @@ export async function getToken() {
     else {
         console.log("Token expired, refreshing...");
     }
-
-    const data = refresh_token && refresh_expires_in > Date.now() ? {
+    
+    const data = refresh_token && refresh_expires_in !== null && refresh_expires_in > Date.now() ? {
         refresh: refresh_token,
     } : {
         secret_id: process.env.GOCARDLESS_SECRET_ID,
@@ -40,7 +39,7 @@ export async function getToken() {
         refresh_expires_in = Date.now() + response.data.refresh_expires * 1000;
         return access_token;
 
-    } catch (error) {
+    } catch (error:any) {
         console.error("Failed to get access token:", error.response?.data || error.message);
         throw new Error("Unable to retrieve access token");
     }
@@ -48,7 +47,7 @@ export async function getToken() {
 
 
 function isTokenValid() {
-    return access_token && access_expires_in > Date.now();
+    return access_token && access_expires_in !== null && access_expires_in > Date.now();
 }
 
 
@@ -69,13 +68,13 @@ export async function getBanks() {
             },
         });
         return response.data;
-    } catch (error) {
+    } catch (error:any) {
         console.error("Failed to get banks:", error.response?.data || error.message);
         throw new Error("Unable to retrieve banks");
     }
 }
 
-export async function connectBank(bankId, redirect) {
+export async function connectBank(bankId:string, redirect:string) {
     const token = await getToken();
 
     if (!token) {
@@ -95,14 +94,14 @@ export async function connectBank(bankId, redirect) {
             },
         });
         return response.data;
-    } catch (error) {
+    } catch (error:any) {
         console.error("Failed to connect bank:", error.response?.data || error.message);
         throw new Error("Unable to connect bank");
     }
 }
 
 
-export async function getAccountsList(requisitionsId, userId) {
+export async function getAccountsList(requisitionsId:string, userId:string) {
     const token = await getToken();
 
     if (!token) {
@@ -150,13 +149,13 @@ export async function getAccountsList(requisitionsId, userId) {
             }
         }
         return response.data;
-    } catch (error) {
+    } catch (error: any) {
         console.error("Failed to get accounts:", error.response?.data || error.message);
         throw new Error("Unable to retrieve accounts");
     }
 }
 
-export async function getConnectedBankData(userId) {
+export async function getConnectedBankData(userId:string) {
 
     const token = await getToken();
 
@@ -195,7 +194,7 @@ export async function getConnectedBankData(userId) {
         );
 
         return banks.filter(Boolean);
-    } catch (error) {
+    } catch (error:any) {
         console.error("Failed to get connections:", error.response?.data || error.message);
         throw new Error("Unable to retrieve connections");
     }

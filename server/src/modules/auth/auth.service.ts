@@ -1,14 +1,18 @@
 import jwt from 'jsonwebtoken';
-import { findUserByEmail, createUser } from './auth.respiratory.js';
+import { findUserByEmail, createUser } from './auth.respiratory';
 import bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
-export async function login(email, password) {
+export async function login(email:string, password:string) {
 
     const existingUser = await findUserByEmail(email);
 
+    if(!existingUser) {
+        throw new Error('Invalid email or password');
+    }
     const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
 
-    if (existingUser && isPasswordCorrect) {
+    if (isPasswordCorrect) {
         const token = generateToken(existingUser);
         return token;
     }
@@ -17,7 +21,7 @@ export async function login(email, password) {
     }
 }
 
-export async function register(email, password) {
+export async function register(email:string, password:string) {
     const user = await findUserByEmail(email);
 
     if (user) {
@@ -30,7 +34,7 @@ export async function register(email, password) {
 
 }
 
-function generateToken(existingUser) {
+function generateToken(existingUser:User) {
 
     if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined in environment variables.");

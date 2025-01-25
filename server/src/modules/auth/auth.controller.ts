@@ -1,6 +1,7 @@
-import { login, register } from './auth.service.js';
+import { Request, Response } from 'express';
+import { login, register } from './auth.service';
 
-export const loginHandler = async (req, res) => {
+export const loginHandler = async (req:Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -11,12 +12,12 @@ export const loginHandler = async (req, res) => {
         const token = await login(email, password);
         res.json({ token });
     }
-    catch (error) {
+    catch (error:any) {
         res.status(401).send(error.message);
     }
 }
 
-export const registerHandler = async (req, res) => {
+export const registerHandler = async (req:Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -32,7 +33,7 @@ export const registerHandler = async (req, res) => {
             res.status(500).json({ error: "Internal server error." });
         }
     }
-    catch (error) {
+    catch (error:any) {
         if (error.message === "User already exists") {
             res.status(409).json({ error: "Email already in use." });
         } else {
@@ -40,3 +41,4 @@ export const registerHandler = async (req, res) => {
         }
     }
 }
+

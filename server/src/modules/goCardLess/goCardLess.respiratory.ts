@@ -1,31 +1,30 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export async function createBankConnection(userId, bankId, institution_id) {
-
+export async function createBankConnection(userId:string, bankId:string, institution_id:string) {
     return await prisma.bankConnection.create({
         data: {
-            userId: userId,
+            userId: Number(userId),
             bankId: bankId,
             institutionId: institution_id,
         },
     });
 }
 
-export async function getBankConnections(userId) {
+export async function getBankConnections(userId:string) {
     return await prisma.bankConnection.findMany(
         {
             where: {
-                userId: userId,
+                userId: Number(userId),
             },
         }
     );
 }
 
-export async function createPendingAccount(accountId, bankConnectionId) {
+export async function createPendingAccount(accountId:string, bankConnectionId:number) {
     return await prisma.pendingAccount.create({
         data: {
-            accountId: accountId,
+            externalId: accountId,
             bankConnectionId: bankConnectionId,
         },
     });

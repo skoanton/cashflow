@@ -1,5 +1,5 @@
 import express from "express";
-import { getBanksHandler, connectHandler, getAccountListHandler, getConnectionsHandler } from "./goCardLess.controller.js";
+import { getBanksHandler, connectHandler, getAccountListHandler, getConnectionsHandler } from "./goCardLess.controller";
 
 const router = express.Router();
 
