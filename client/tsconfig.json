@@ -12,8 +12,20 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./src/*"
-      ]
+        "src/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@node_modules/*": [
+        "node_modules/*"
+      ],
+      "@routes/*": [
+        "src/routes/*"
+      ],
+      "@api/*": [
+        "src/api/*"
+      ],
     }
   }
 }
